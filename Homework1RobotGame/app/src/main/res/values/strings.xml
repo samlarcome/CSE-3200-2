@@ -1,0 +1,9 @@
+<!--Put here for blind people-->
+<resources>
+    <string name="app_name">Homework 1 Robot Game</string>
+    <string name="begin_message">Begin the Game!</string>
+
+    <string name="red_robot_message">Red Robot\'s Turn</string>
+    <string name="white_robot_message">White Robot\'s Turn</string>
+    <string name="yellow_robot_message">Yellow Robot\'s Turn</string>
+</resources>
