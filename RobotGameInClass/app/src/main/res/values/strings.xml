@@ -6,4 +6,14 @@
     <string name="red_robot_message">Red Robot\'s Turn</string>
     <string name="white_robot_message">White Robot\'s Turn</string>
     <string name="yellow_robot_message">Yellow Robot\'s Turn</string>
+
+    <string name="reward_a">Reward A</string>
+    <string name="reward_b">Reward B</string>
+    <string name="reward_c">Reward C</string>
+    <string name="error_reward">Unknown Purchase</string>
+
+    <string name="purchased">Purchased</string>
+    <string name="insufficient">Insufficient Resources</string>
+    <string name="robot_energy">0</string>
+    <string name="purchase_rewards">Make Purchase</string>
 </resources>

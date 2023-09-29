@@ -1,14 +1,20 @@
 package com.example.robotgameinclass
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 
 private const val TAG = "MainActivity"
+
+//const val EXTRA_ROBOT_ENERGY = "com.bignerdranch.android.robot.current_robot_energy"
 
 class MainActivity : AppCompatActivity() {
     /*
@@ -22,14 +28,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var whiteRobotImage: ImageView
     private lateinit var yellowRobotImage: ImageView
     private lateinit var messageBox: TextView
+    private lateinit var rewardButton: Button
 
     private lateinit var robotImages : MutableList<ImageView>
 
     // listOf is IMMUTABLE
     private val robots = listOf(
-        Robot(R.string.red_robot_message, false, R.drawable.king_of_detroit_robot_red_large, R.drawable.king_of_detroit_robot_red_small),
-        Robot(R.string.white_robot_message, false, R.drawable.king_of_detroit_robot_white_large, R.drawable.king_of_detroit_robot_white_small),
-        Robot(R.string.yellow_robot_message, false, R.drawable.king_of_detroit_robot_yellow_large, R.drawable.king_of_detroit_robot_yellow_small)
+        Robot(R.string.red_robot_message, false, R.drawable.king_of_detroit_robot_red_large, R.drawable.king_of_detroit_robot_red_small, 0),
+        Robot(R.string.white_robot_message, false, R.drawable.king_of_detroit_robot_white_large, R.drawable.king_of_detroit_robot_white_small, 0),
+        Robot(R.string.yellow_robot_message, false, R.drawable.king_of_detroit_robot_yellow_large, R.drawable.king_of_detroit_robot_yellow_small, 0)
     )
 
     /* by = property delegate ---
@@ -54,9 +61,25 @@ class MainActivity : AppCompatActivity() {
         whiteRobotImage.setOnClickListener { view: View -> toggleImage() }
         yellowRobotImage.setOnClickListener { view: View -> toggleImage() }
 
-        // d = debug, i = info, v = verbose, e = error
-        Log.d(TAG, "onCreate() entered")
-        Log.d(TAG, "instance of viewModel created")
+        rewardButton.setOnClickListener { view : View ->
+            // Toast.makeText(this, "Going to make a purchase", Toast.LENGTH_SHORT).show()
+
+            /*
+                this =
+                ::class.java  =  relic when java was the only folder/language
+                    - forcing it to be the java version
+             */
+
+            //val intent = Intent(this, RobotPurchase::class.java)
+            //intent.putExtra(EXTRA_ROBOT_ENERGY, robots[robotViewModel.turnCount - 1].myEnergy)
+
+            /*
+                A companion object is a static method (put class name in front)
+             */
+            val intent = RobotPurchase.newIntent(this, robots[robotViewModel.turnCount - 1].myEnergy)
+            //startActivity(intent)
+            purchaseLauncher.launch(intent)
+        }
 
         // Logic to make sure right robot is large upon recreation
         if (robotViewModel.turnCount != 0) {
@@ -66,38 +89,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        Log.d(TAG, "onStart entered")
+
+    private val purchaseLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        result ->
+        // TODO Later
     }
 
-    override fun onResume() {
-        super.onResume()
-        Log.d(TAG, "onResume entered")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d(TAG, "onPause entered")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d(TAG, "onStop entered")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d(TAG, "onDestroy entered")
-    }
-
-
-    /*
-        Have there been any clicks yet? If not, all robots are large.
-        If any robots are clicked, then they rotate. First, only red
-        is large, second only white is large, third only yellow is large.
-        The cycle repeats... RED, WHITE, YELLOW, RED, etc.
-     */
     private fun toggleImage() {
         robotViewModel.advanceTurn()
 
@@ -115,6 +112,7 @@ class MainActivity : AppCompatActivity() {
         for(robot in robots) { robot.myTurn = false }
         // get the turn count from the robotViewModel class
         robots[robotViewModel.turnCount - 1].myTurn = true
+        robots[robotViewModel.turnCount - 1].myEnergy += 1
     }
 
     private fun setRobotImages() {
