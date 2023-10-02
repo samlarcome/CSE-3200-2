@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var robotImages : MutableList<ImageView>
     private var latestPurchaseCost = 0
+    private var totalEnergySpent = 0
 
     private val robots = listOf(
         Robot(R.string.red_robot_message, false, R.drawable.king_of_detroit_robot_red_large, R.drawable.king_of_detroit_robot_red_small, 0),
@@ -40,7 +41,9 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == Activity.RESULT_OK) {
             // capture this data for a toast
             latestPurchaseCost = result.data?.getIntExtra(EXTRA_ROBOT_ITEM_PURCHASED, 0) ?: 0
-            Toast.makeText(this, "The Latest Purchase Was For $latestPurchaseCost Energy!", Toast.LENGTH_SHORT).show()
+            totalEnergySpent = result.data?.getIntExtra(EXTRA_ROBOT_ENERGY_SPENT, 0) ?: 0
+            robots[robotViewModel.turnCount - 1].myEnergy -= totalEnergySpent
+            Toast.makeText(this, "The Latest Purchase Was For $latestPurchaseCost Energy!\nMy Total Spent: $totalEnergySpent", Toast.LENGTH_SHORT).show()
         }
     }
 

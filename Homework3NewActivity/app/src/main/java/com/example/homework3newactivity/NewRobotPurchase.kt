@@ -16,6 +16,7 @@ import androidx.activity.viewModels
 private const val EXTRA_ROBOT_ENERGY = "com.bignerdranch.android.robot.current_robot_energy"
 private const val EXTRA_ROBOT_IMAGE_RESOURCE = "com.bignerdranch.android.robot.current_image_resource"
 const val EXTRA_ROBOT_ITEM_PURCHASED = "com.bignerdranch.android.robot.robot_item_purchased"
+const val EXTRA_ROBOT_ENERGY_SPENT = "com.bignerdranch.android.robot.robot_energy_spent"
 
 class NewRobotPurchase : AppCompatActivity() {
 
@@ -30,10 +31,15 @@ class NewRobotPurchase : AppCompatActivity() {
     // extra that is passed from main activity
     private var robotEnergy = 0
     private var imageResource = 0
+    private var energySpent = 0
+
+    private val robotViewModel : RobotViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_robot_purchase)
+
+        energySpent = 0
 
         rewardButtonA = findViewById(R.id.buy_reward_a)
         rewardButtonB = findViewById(R.id.buy_reward_b)
@@ -93,18 +99,19 @@ class NewRobotPurchase : AppCompatActivity() {
             Toast.makeText(this, s1, Toast.LENGTH_SHORT).show()
             robotEnergy -= costOfPurchase
             robotEnergyAvailable.text = robotEnergy.toString()
+            energySpent += costOfPurchase
 
-            setItemPurchased(costOfPurchase)
+            setItemPurchased(costOfPurchase, energySpent)
         } else {
             Toast.makeText(this, R.string.insufficient, Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun setItemPurchased(robotPurchaseMade : Int) {
+    private fun setItemPurchased(robotPurchaseMade : Int, robotEnergySpent : Int) {
         val data = Intent().apply{
             putExtra(EXTRA_ROBOT_ITEM_PURCHASED, robotPurchaseMade)
+            putExtra(EXTRA_ROBOT_ENERGY_SPENT, robotEnergySpent)
         }
         setResult(Activity.RESULT_OK, data)
-        // Activity.RESULT_CANCELED -- maybe scrolling up inside the purchase activity
     }
 }
