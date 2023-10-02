@@ -13,9 +13,7 @@ import androidx.activity.viewModels
 import android.util.Log
 import android.widget.Toast
 
-private const val DEBUG = "DEBUG"
 private const val TAG = "MainActivity"
-//const val EXTRA_ROBOT_ENERGY = "com.bignerdranch.android.robot.current_robot_energy"
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == Activity.RESULT_OK) {
             // capture this data for a toast
             latestPurchaseCost = result.data?.getIntExtra(EXTRA_ROBOT_ITEM_PURCHASED, 0) ?: 0
-            Toast.makeText(this, latestPurchaseCost.toString(), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "The Latest Purchase Was For $latestPurchaseCost Energy!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -56,7 +54,6 @@ class MainActivity : AppCompatActivity() {
         messageBox = findViewById(R.id.message_box)
         makePurchase = findViewById(R.id.make_purchase)
 
-
         robotImages = mutableListOf(redRobotImage, whiteRobotImage, yellowRobotImage)
 
         redRobotImage.setOnClickListener { view: View -> toggleImage() }
@@ -64,13 +61,8 @@ class MainActivity : AppCompatActivity() {
         yellowRobotImage.setOnClickListener { view: View -> toggleImage() }
 
         makePurchase.setOnClickListener { view : View ->
-            // Toast.makeText(this, "Going to make a purchase", Toast.LENGTH_SHORT).show()
-
-            //val intent = Intent(this, NewRobotPurchase::class.java)
-            //intent.putExtra(EXTRA_ROBOT_ENERGY, robots[robotViewModel.turnCount - 1].myEnergy)
             if ((robotViewModel.turnCount) != 0) {
                 val intent = NewRobotPurchase.newIntent(this, robots[robotViewModel.turnCount - 1].myEnergy, robots[robotViewModel.turnCount - 1].largeImageResource)
-//                startActivity(intent)
                 purchaseLauncher.launch(intent)
             }
         }
