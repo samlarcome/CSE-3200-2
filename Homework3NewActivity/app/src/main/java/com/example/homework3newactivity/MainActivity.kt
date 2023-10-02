@@ -35,6 +35,15 @@ class MainActivity : AppCompatActivity() {
 
     private val robotViewModel : RobotViewModel by viewModels()
 
+
+    /*
+        purchaseLauncher is registered to handle the result of starting an activity. It processes the result when the launched activity (RobotPurchase) finishes.
+        Lambda - if the RobotPurchase activity exits ok (hit the back button, don't swipe up), handle the Extra's that are sent back from RobotPurchase.
+
+        - EXTRA_ROBOT_ITEM_PURCHASED = the latest amount purchased by the current robot
+        - EXTRA_ROBOT_ENERGY_SPENT = the total amount spent by current robot while in the RobotPurchase Activity (to update it)
+            - robot energy is not in RobotViewModel (maybe in task 3???)
+     */
     private val purchaseLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()) {
             result ->
@@ -43,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             latestPurchaseCost = result.data?.getIntExtra(EXTRA_ROBOT_ITEM_PURCHASED, 0) ?: 0
             totalEnergySpent = result.data?.getIntExtra(EXTRA_ROBOT_ENERGY_SPENT, 0) ?: 0
             robots[robotViewModel.turnCount - 1].myEnergy -= totalEnergySpent
-            Toast.makeText(this, "The Latest Purchase Was For $latestPurchaseCost Energy!\nMy Total Spent: $totalEnergySpent", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "The Latest Purchase Was For $latestPurchaseCost Energy!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -63,6 +72,14 @@ class MainActivity : AppCompatActivity() {
         whiteRobotImage.setOnClickListener { view: View -> toggleImage() }
         yellowRobotImage.setOnClickListener { view: View -> toggleImage() }
 
+        /*
+            Set on click event listener for the make purchase button that launches the Robot Purchase Activity
+            We should only launch the Activity if any robot has had a turn (when turnCount != 0 ... it is initially 0, but never again after a single turn)
+            Conditionally launch an activity using purchaseLauncher. The intent for launching the activity is created using NewRobotPurchase.newIntent (static method)
+            NewRobotPurchase.newIntent requires 2 extras
+                - the energy of current robot
+                - the id of largeImageResource for current robot (to set the correct image in new activity)
+         */
         makePurchase.setOnClickListener { view : View ->
             if ((robotViewModel.turnCount) != 0) {
                 val intent = NewRobotPurchase.newIntent(this, robots[robotViewModel.turnCount - 1].myEnergy, robots[robotViewModel.turnCount - 1].largeImageResource)
@@ -71,29 +88,37 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        // Logic to make sure right robot is large upon recreation
+        // Logic to make sure the correct robot is large upon recreation
         if (robotViewModel.turnCount != 0) {
             setRobotTurn()
             updateMessageBox()
             setRobotImages()
         }
-
     }
 
     private fun toggleImage() {
+        /*
+            Call necessary functions each time a robot is clicked.
+            Increment the turn count in the view model - advanceTurn()
+            Set the boolean to True for current robots turn & increment the energy by 1 - setRobotTurn()
+            Set the current robot's image to large - setRobotImages()
+         */
         robotViewModel.advanceTurn()
-
         updateMessageBox()
         setRobotTurn()
         setRobotImages()
     }
 
     private fun updateMessageBox() {
-        // get the turn count from the robotViewModel class
+        // get the turn count from the robotViewModel class & update the message box
         messageBox.setText(robots[robotViewModel.turnCount - 1].messageResource)
     }
 
     private fun setRobotTurn() {
+        /*
+            Iterate through each robot, setting their turn to False.
+            Set the current robot's turn to True & increment their energy by 1.
+         */
         for(robot in robots) { robot.myTurn = false }
 
         robots[robotViewModel.turnCount - 1].myTurn = true
@@ -101,6 +126,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setRobotImages() {
+        //Iterate through the 3 robot's and make the current robot's image large, and all other small
         for(index in 0 .. 2) {
             if(robots[index].myTurn) {
                 robotImages[index].setImageResource(robots[index].largeImageResource)
