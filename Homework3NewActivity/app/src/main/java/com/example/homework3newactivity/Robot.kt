@@ -6,5 +6,6 @@ data class Robot(
     var myTurn: Boolean,
     val largeImageResource : Int,
     val smallImageResource: Int,
-    var myEnergy : Int
+    var myEnergy : Int,
+    var lastPurchase : Int
 ) {}

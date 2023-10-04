@@ -28,9 +28,9 @@ class MainActivity : AppCompatActivity() {
     private var totalEnergySpent = 0
 
     private val robots = listOf(
-        Robot(R.string.red_robot_message, false, R.drawable.king_of_detroit_robot_red_large, R.drawable.king_of_detroit_robot_red_small, 0),
-        Robot(R.string.white_robot_message, false, R.drawable.king_of_detroit_robot_white_large, R.drawable.king_of_detroit_robot_white_small, 0),
-        Robot(R.string.yellow_robot_message, false, R.drawable.king_of_detroit_robot_yellow_large, R.drawable.king_of_detroit_robot_yellow_small, 0)
+        Robot(R.string.red_robot_message, false, R.drawable.king_of_detroit_robot_red_large, R.drawable.king_of_detroit_robot_red_small, 0, -1),
+        Robot(R.string.white_robot_message, false, R.drawable.king_of_detroit_robot_white_large, R.drawable.king_of_detroit_robot_white_small, 0, -1),
+        Robot(R.string.yellow_robot_message, false, R.drawable.king_of_detroit_robot_yellow_large, R.drawable.king_of_detroit_robot_yellow_small, 0, -1)
     )
 
     private val robotViewModel : RobotViewModel by viewModels()
@@ -50,6 +50,8 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == Activity.RESULT_OK) {
             // capture this data for a toast
             latestPurchaseCost = result.data?.getIntExtra(EXTRA_ROBOT_ITEM_PURCHASED, 0) ?: 0
+            robots[robotViewModel.turnCount -1].lastPurchase = latestPurchaseCost
+
             totalEnergySpent = result.data?.getIntExtra(EXTRA_ROBOT_ENERGY_SPENT, 0) ?: 0
             robots[robotViewModel.turnCount - 1].myEnergy -= totalEnergySpent
             Toast.makeText(this, "The Latest Purchase Was For $latestPurchaseCost Energy!", Toast.LENGTH_SHORT).show()
@@ -107,6 +109,7 @@ class MainActivity : AppCompatActivity() {
         updateMessageBox()
         setRobotTurn()
         setRobotImages()
+        makeRobotToast()
     }
 
     private fun updateMessageBox() {
@@ -133,6 +136,18 @@ class MainActivity : AppCompatActivity() {
             } else {
                 robotImages[index].setImageResource(robots[index].smallImageResource)
             }
+        }
+    }
+
+    private fun makeRobotToast() {
+        /*
+            When it is a robot's turn, a toast must show its most recent purchase.
+            .latestPurchase is -1 until that robot makes a purchase, so make a toast if != -1
+            This function is called inside toggleImage(), after the text message and image view are set.
+         */
+        var latestPurchase = robots[robotViewModel.turnCount - 1].lastPurchase
+        if (latestPurchase != -1) {
+            Toast.makeText(this, "This Robot's Most Recent Purchase Was For $latestPurchase", Toast.LENGTH_LONG).show()
         }
     }
 }
