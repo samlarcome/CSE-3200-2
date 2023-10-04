@@ -7,11 +7,10 @@ import android.widget.Button
 import android.widget.TextView
 import android.app.Activity
 import android.content.Context
-import android.renderscript.ScriptGroup.Binding
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.viewModels
+import java.util.Random
 
 /*
     Extras are KEY-VALUE pairs that are used to pass data between activities (attached to intents)
@@ -29,19 +28,31 @@ const val EXTRA_ROBOT_ENERGY_SPENT = "com.bignerdranch.android.robot.robot_energ
 
 class NewRobotPurchase : AppCompatActivity() {
 
-    private lateinit var rewardButtonA : Button
-    private lateinit var rewardButtonB : Button
-    private lateinit var rewardButtonC : Button
+    private lateinit var rewardButton1 : Button
+    private lateinit var rewardButton2 : Button
+    private lateinit var rewardButton3 : Button
+
+    private lateinit var reward1Price : TextView
+    private lateinit var reward2Price : TextView
+    private lateinit var reward3Price : TextView
+
     private lateinit var robotImage : ImageView
     private lateinit var robotEnergyAvailable : TextView
 
-    /*
-
-
-     */
     private var robotEnergy = 0
     private var imageResource = 0
     private var energySpent = 0
+
+
+    private val rewardButtons = listOf(
+        PurchaseButton(R.string.reward_a_button, R.string.one, 1),
+        PurchaseButton(R.string.reward_b_button, R.string.two, 2),
+        PurchaseButton(R.string.reward_c_button, R.string.three, 3),
+        PurchaseButton(R.string.reward_d_button, R.string.three, 3),
+        PurchaseButton(R.string.reward_e_button, R.string.four, 4),
+        PurchaseButton(R.string.reward_f_button, R.string.four, 4),
+        PurchaseButton(R.string.reward_g_button, R.string.seven, 7)
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,20 +61,48 @@ class NewRobotPurchase : AppCompatActivity() {
         // set energySpent to zero each time RobotPurchase Activity is created, want to track spent in this session.
         energySpent = 0
 
-        rewardButtonA = findViewById(R.id.buy_reward_a)
-        rewardButtonB = findViewById(R.id.buy_reward_b)
-        rewardButtonC = findViewById(R.id.buy_reward_c)
+        // Make 3 Random Buttons (From A - G) ******************************************************************************************************
+        //val buttonStringList = listOf(R.string.reward_a_button, R.string.reward_b_button, R.string.reward_c_button,
+        //        R.string.reward_d_button, R.string.reward_e_button, R.string.reward_f_button, R.string.reward_g_button)
+
+        val random = Random()
+        // Initialize a set to store unique random indices
+        val uniqueIndices = mutableSetOf<Int>()
+        // Choose three unique random strings
+        while (uniqueIndices.size < 3) {
+            val randomIndex = random.nextInt(rewardButtons.size)
+            uniqueIndices.add(randomIndex)
+        }
+
+        val sortedIndices = uniqueIndices.sorted()
+        // ****************************************************************************************************************************************
+
+        rewardButton1 = findViewById(R.id.buy_reward_1)
+        rewardButton2 = findViewById(R.id.buy_reward_2)
+        rewardButton3 = findViewById(R.id.buy_reward_3)
+        reward1Price = findViewById(R.id.oneTextView)
+        reward2Price = findViewById(R.id.twoTextView)
+        reward3Price = findViewById(R.id.threeTextView)
+
+        rewardButton1.text = getString(rewardButtons[sortedIndices[0]].buttonString)
+        rewardButton3.text = getString(rewardButtons[sortedIndices[2]].buttonString)
+        rewardButton2.text = getString(rewardButtons[sortedIndices[1]].buttonString)
+
+        reward1Price.text = getString(rewardButtons[sortedIndices[0]].costString)
+        reward2Price.text = getString(rewardButtons[sortedIndices[1]].costString)
+        reward3Price.text = getString(rewardButtons[sortedIndices[2]].costString)
+
         robotImage = findViewById(R.id.robot_image)
         robotEnergyAvailable = findViewById(R.id.robot_energy_to_spend)
 
-        rewardButtonA.setOnClickListener { _ : View ->
-            makePurchase(1)
+        rewardButton1.setOnClickListener { _ : View ->
+            makePurchase(rewardButtons[sortedIndices[0]].costPrice, rewardButton1)
         }
-        rewardButtonB.setOnClickListener { _ : View ->
-            makePurchase(2)
+        rewardButton2.setOnClickListener { _ : View ->
+            makePurchase(rewardButtons[sortedIndices[1]].costPrice, rewardButton2)
         }
-        rewardButtonC.setOnClickListener { _ : View ->
-            makePurchase(3)
+        rewardButton3.setOnClickListener { _ : View ->
+            makePurchase(rewardButtons[sortedIndices[2]].costPrice, rewardButton3)
         }
 
         // get the extra energy passed from main and update the energy display
@@ -91,7 +130,7 @@ class NewRobotPurchase : AppCompatActivity() {
     }
 
 
-    private fun makePurchase(costOfPurchase: Int) {
+    private fun makePurchase(costOfPurchase: Int, buttonToDisable : Button) {
         /*
             Handle the logic when the current robot wants to make a purchase.
             A robot can only make a purchase if they have enough energy (>= costOfPurchase).
@@ -102,9 +141,11 @@ class NewRobotPurchase : AppCompatActivity() {
         */
         if(robotEnergy >= costOfPurchase) {
             val s1 = when (costOfPurchase) {
-                1 -> getString(R.string.reward_a_purchase)
-                2 -> getString(R.string.reward_b_purchase)
-                3 -> getString(R.string.reward_c_purchase)
+                1 -> getString(R.string.reward_1_purchase)
+                2 -> getString(R.string.reward_2_purchase)
+                3 -> getString(R.string.reward_3_purchase)
+                4 -> getString(R.string.reward_4_purchase)
+                7 -> getString(R.string.reward_7_purchase)
                 else -> getString(R.string.error_reward)
             }
 
@@ -112,6 +153,8 @@ class NewRobotPurchase : AppCompatActivity() {
             robotEnergy -= costOfPurchase
             robotEnergyAvailable.text = robotEnergy.toString()
             energySpent += costOfPurchase
+
+            buttonToDisable.isEnabled = false
 
             setItemPurchased(costOfPurchase, energySpent)
         } else {

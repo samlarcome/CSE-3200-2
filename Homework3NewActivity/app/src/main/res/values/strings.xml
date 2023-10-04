@@ -11,16 +11,26 @@
     <string name="reward_a_button">Reward\n A</string>
     <string name="reward_b_button">Reward\n B</string>
     <string name="reward_c_button">Reward\n C</string>
+    <string name="reward_d_button">Reward\n D</string>
+    <string name="reward_e_button">Reward\n E</string>
+    <string name="reward_f_button">Reward\n F</string>
+    <string name="reward_g_button">Reward\n G</string>
     <string name="error_reward">Unknown Purchase</string>
 
-    <string name="reward_a_purchase">Reward A Purchased For 1 Energy!</string>
-    <string name="reward_b_purchase">Reward B Purchased For 2 Energy!</string>
-    <string name="reward_c_purchase">Reward C Purchased For 3 Energy!</string>
+    <string name="reward_1_purchase">Reward Purchased For 1 Energy!</string>
+    <string name="reward_2_purchase">Reward Purchased For 2 Energy!</string>
+    <string name="reward_3_purchase">Reward Purchased For 3 Energy!</string>
+    <string name="reward_4_purchase">Reward Purchased For 4 Energy!</string>
+    <string name="reward_7_purchase">Reward Purchased For 7 Energy!</string>
+<!--    <string name="reward_f_purchase">Reward F Purchased For 4 Energy!</string>-->
+<!--    <string name="reward_g_purchase">Reward G Purchased For 7 Energy!</string>-->
     <string name="insufficient">Insufficient Resources</string>
 
     <string name="one">1</string>
     <string name="two">2</string>
     <string name="three">3</string>
+    <string name="four">4</string>
+    <string name="seven">7</string>
 
     <string name="robot_energy">0</string>
 </resources>

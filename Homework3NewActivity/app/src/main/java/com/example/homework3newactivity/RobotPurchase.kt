@@ -47,9 +47,9 @@ class RobotPurchase : AppCompatActivity() {
     private fun makePurchase(costOfPurchase: Int) {
         if(robotEnergy >= costOfPurchase) {
             val s1 = when (costOfPurchase) {
-                1 -> getString(R.string.reward_a_purchase)
-                2 -> getString(R.string.reward_b_purchase)
-                3 -> getString(R.string.reward_c_purchase)
+                1 -> getString(R.string.reward_1_purchase)
+                2 -> getString(R.string.reward_2_purchase)
+                3 -> getString(R.string.reward_3_purchase)
                 else -> getString(R.string.error_reward)
             }
 

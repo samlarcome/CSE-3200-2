@@ -42,21 +42,21 @@
         android:gravity="center">
 
         <Button
-            android:id="@+id/buy_reward_a"
+            android:id="@+id/buy_reward_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
             android:text="@string/reward_a_button" />
 
         <Button
-            android:id="@+id/buy_reward_b"
+            android:id="@+id/buy_reward_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
             android:text="@string/reward_b_button" />
 
         <Button
-            android:id="@+id/buy_reward_c"
+            android:id="@+id/buy_reward_3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="12dp"
