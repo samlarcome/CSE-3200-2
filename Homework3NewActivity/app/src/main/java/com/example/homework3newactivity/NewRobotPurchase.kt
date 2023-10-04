@@ -44,6 +44,14 @@ class NewRobotPurchase : AppCompatActivity() {
     private var energySpent = 0
 
 
+    /*
+        Use PurchaseButton Data Class to store relevant information for each purchase button.
+            - buttonString = the string that would be displayed on that button (e.g. "Reward F")
+            - costString = the string that indicates how much that button costs (e.g. "4")
+            - costPrice = the integer that indicates how much that button costs (e.g. 4)
+
+       Note: Strings are stored as Int in the data class because R stores the IDs as integers
+     */
     private val rewardButtons = listOf(
         PurchaseButton(R.string.reward_a_button, R.string.one, 1),
         PurchaseButton(R.string.reward_b_button, R.string.two, 2),
@@ -61,40 +69,53 @@ class NewRobotPurchase : AppCompatActivity() {
         // set energySpent to zero each time RobotPurchase Activity is created, want to track spent in this session.
         energySpent = 0
 
-        // Make 3 Random Buttons (From A - G) ******************************************************************************************************
-        //val buttonStringList = listOf(R.string.reward_a_button, R.string.reward_b_button, R.string.reward_c_button,
-        //        R.string.reward_d_button, R.string.reward_e_button, R.string.reward_f_button, R.string.reward_g_button)
+        rewardButton1 = findViewById(R.id.buy_reward_1)
+        rewardButton2 = findViewById(R.id.buy_reward_2)
+        rewardButton3 = findViewById(R.id.buy_reward_3)
 
+        reward1Price = findViewById(R.id.oneTextView)
+        reward2Price = findViewById(R.id.twoTextView)
+        reward3Price = findViewById(R.id.threeTextView)
+
+        robotImage = findViewById(R.id.robot_image)
+        robotEnergyAvailable = findViewById(R.id.robot_energy_to_spend)
+
+        /* Make 3 Random Buttons (From A - G) ******************************************************************************************************
+            The idea is to find 3 unique indices of the rewardsButton list (which is created in alphabetical order)
+            Keep pulling random integers from 0 - 6 (size of rewardsButton list) until len of uniqueIndices = 3
+            uniqueIndices is a set (unique cuz hashed).
+        */
         val random = Random()
+
         // Initialize a set to store unique random indices
         val uniqueIndices = mutableSetOf<Int>()
-        // Choose three unique random strings
+
+        // Choose three unique random strings ( So we don't repeat buttons on the purchase screen)
         while (uniqueIndices.size < 3) {
             val randomIndex = random.nextInt(rewardButtons.size)
             uniqueIndices.add(randomIndex)
         }
 
+        // Sort them in order so we can sort buttons in order alphabetically
         val sortedIndices = uniqueIndices.sorted()
         // ****************************************************************************************************************************************
 
-        rewardButton1 = findViewById(R.id.buy_reward_1)
-        rewardButton2 = findViewById(R.id.buy_reward_2)
-        rewardButton3 = findViewById(R.id.buy_reward_3)
-        reward1Price = findViewById(R.id.oneTextView)
-        reward2Price = findViewById(R.id.twoTextView)
-        reward3Price = findViewById(R.id.threeTextView)
-
+        // Set the text for each of the random 3 buttons (e.g "Reward B")
         rewardButton1.text = getString(rewardButtons[sortedIndices[0]].buttonString)
         rewardButton3.text = getString(rewardButtons[sortedIndices[2]].buttonString)
         rewardButton2.text = getString(rewardButtons[sortedIndices[1]].buttonString)
 
+        // Set the text for the cost of each of random 3 buttons (e.g. "4")
         reward1Price.text = getString(rewardButtons[sortedIndices[0]].costString)
         reward2Price.text = getString(rewardButtons[sortedIndices[1]].costString)
         reward3Price.text = getString(rewardButtons[sortedIndices[2]].costString)
 
-        robotImage = findViewById(R.id.robot_image)
-        robotEnergyAvailable = findViewById(R.id.robot_energy_to_spend)
 
+        /*
+            Set onClickListener for each of the 3 random buttons.
+            The cost price can be found from the PurchaseButton data class.
+            Pass the reward button of type Button to makePurchase() fxn to disable if purchased.
+         */
         rewardButton1.setOnClickListener { _ : View ->
             makePurchase(rewardButtons[sortedIndices[0]].costPrice, rewardButton1)
         }
@@ -138,6 +159,8 @@ class NewRobotPurchase : AppCompatActivity() {
             Subtract the energy spent from the robotEnergy, and update the energy counter on screen.
             Add the amount spent to energySpent, to keep track of total energy spend (to send back to Main Activity).
             Create an Intent with robotEnergy & energySpent as extras and set the result of the current activity with that Intent
+
+            Disables the button if it is purchased.
         */
         if(robotEnergy >= costOfPurchase) {
             val s1 = when (costOfPurchase) {
