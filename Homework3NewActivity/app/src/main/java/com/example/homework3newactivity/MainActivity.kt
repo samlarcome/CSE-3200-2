@@ -51,10 +51,12 @@ class MainActivity : AppCompatActivity() {
             // capture this data for a toast
             latestPurchaseCost = result.data?.getIntExtra(EXTRA_ROBOT_ITEM_PURCHASED, 0) ?: 0
             robots[robotViewModel.turnCount -1].lastPurchase = latestPurchaseCost
+            robots[robotViewModel.turnCount - 1].listOfPurchases.add(latestPurchaseCost)
 
             totalEnergySpent = result.data?.getIntExtra(EXTRA_ROBOT_ENERGY_SPENT, 0) ?: 0
             robots[robotViewModel.turnCount - 1].myEnergy -= totalEnergySpent
-            Toast.makeText(this, "The Latest Purchase Was For $latestPurchaseCost Energy!", Toast.LENGTH_SHORT).show()
+            makeRobotToast()
+//            Toast.makeText(this, "The Latest Purchase Was For $latestPurchaseCost Energy!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -145,9 +147,16 @@ class MainActivity : AppCompatActivity() {
             .latestPurchase is -1 until that robot makes a purchase, so make a toast if != -1
             This function is called inside toggleImage(), after the text message and image view are set.
          */
-        var latestPurchase = robots[robotViewModel.turnCount - 1].lastPurchase
-        if (latestPurchase != -1) {
-            Toast.makeText(this, "This Robot's Most Recent Purchase Was For $latestPurchase", Toast.LENGTH_LONG).show()
+
+        // Need to fix when making two or more purchases in one session (send back list) --
+        if (robots[robotViewModel.turnCount - 1].lastPurchase != -1) {
+            var listPurchaseString = ""
+            for (purchase in robots[robotViewModel.turnCount - 1].listOfPurchases) {
+                listPurchaseString += "$purchase "
+            }
+            Toast.makeText(this, "Purchase List: $listPurchaseString", Toast.LENGTH_LONG).show()
         }
+
+
     }
 }

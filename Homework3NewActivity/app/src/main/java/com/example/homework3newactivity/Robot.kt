@@ -8,5 +8,5 @@ data class Robot(
     val smallImageResource: Int,
     var myEnergy : Int,
     var lastPurchase : Int,
-    var listOfPurchases : MutableList<Int>
+    var listOfPurchases : MutableList<Int> = mutableListOf()
 ) {}

@@ -9,4 +9,4 @@ data class PurchaseButton(
     val buttonString : Int,
     val costString : Int,
     val costPrice : Int
-)
+) {}
