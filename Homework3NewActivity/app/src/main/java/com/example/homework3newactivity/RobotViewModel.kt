@@ -4,16 +4,34 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.SavedStateHandle
 
-private const val TAG = "RobotViewModel"
+
 private const val TURN_COUNT_KEY = "TURN_COUNT_KEY"
+private const val ENERGY_COUNT_KEY = "ENERGY_COUNT_KEY"
+private const val PURCHASE_LIST_KEY = "PURCHASE_LIST_KEY"
+private const val PURCHASED_BUTTONS = "PURCHASED_BUTTONS"
+
 
 class RobotViewModel(private val savedStateHandle : SavedStateHandle) : ViewModel() {
 
-    override fun onCleared() {
-        super.onCleared()
-        Log.d(TAG, "Instance of RobotViewModel about to be destroyed/cleared")
-    }
+    // ******************************************************************************************************************************
+    private var integerList: ArrayList<Int> = savedStateHandle.get(ENERGY_COUNT_KEY) ?: ArrayList<Int>(listOf(0,0,0))
+    // Getter for energyList
+    val energyList: List<Int>
+        get() = integerList
 
+    // Function to update the list of integers
+    fun updateEnergy(index : Int, energyVal : Int) { integerList[index] += energyVal }
+    fun increaseEnergy() { integerList[turnCount - 1] += 1 }
+    // ******************************************************************************************************************************
+
+    private var purchaseList: ArrayList<ArrayList<Int>> = savedStateHandle.get(PURCHASE_LIST_KEY) ?: ArrayList<ArrayList<Int>>(listOf(ArrayList(), ArrayList(), ArrayList()))
+
+    val purchases: List<List<Int>>
+        get() = purchaseList
+
+    fun addPurchaseToList(index : Int, purchase : Int) { purchaseList[index].add(purchase) }
+
+    // ********************************************************************************************************************************
     var turnCount : Int
         get() = savedStateHandle.get(TURN_COUNT_KEY) ?: 0
         set(value) = savedStateHandle.set(TURN_COUNT_KEY, value)
@@ -22,4 +40,19 @@ class RobotViewModel(private val savedStateHandle : SavedStateHandle) : ViewMode
         turnCount++
         if(turnCount > 3) { turnCount = 1}
     }
+
+    // ********************************************************************************************************************************
+    private var purchasedButtons: MutableSet<String> = savedStateHandle.get(PURCHASED_BUTTONS) ?: mutableSetOf<String>()
+    val disabledButtons: Set<String>
+        get() = purchasedButtons
+
+    fun addDisabledButton(id : String) {
+        purchasedButtons.add(id)
+    }
+
+    fun isDisabled(id : String) : Boolean {
+        return (purchasedButtons.contains(id))
+    }
+    // ********************************************************************************************************************************
+
 }

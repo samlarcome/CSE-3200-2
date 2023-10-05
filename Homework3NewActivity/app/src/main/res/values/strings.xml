@@ -22,8 +22,6 @@
     <string name="reward_3_purchase">Reward Purchased For 3 Energy!</string>
     <string name="reward_4_purchase">Reward Purchased For 4 Energy!</string>
     <string name="reward_7_purchase">Reward Purchased For 7 Energy!</string>
-<!--    <string name="reward_f_purchase">Reward F Purchased For 4 Energy!</string>-->
-<!--    <string name="reward_g_purchase">Reward G Purchased For 7 Energy!</string>-->
     <string name="insufficient">Insufficient Resources</string>
 
     <string name="one">1</string>

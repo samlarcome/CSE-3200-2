@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var makePurchase: Button
 
     private lateinit var robotImages : MutableList<ImageView>
-    private var totalEnergySpent = 0
 
     private val robots = listOf(
         Robot(R.string.red_robot_message, false, R.drawable.king_of_detroit_robot_red_large, R.drawable.king_of_detroit_robot_red_small, 0, -1),
@@ -54,12 +53,17 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == Activity.RESULT_OK) {
 
             val listOfPurchases = result.data?.getIntArrayExtra(EXTRA_ROBOT_ITEM_PURCHASED)?.toMutableList() ?: mutableListOf<Int>()
-            for (purchase in listOfPurchases) {
-                robots[robotViewModel.turnCount - 1].listOfPurchases.add(purchase)
-            }
+            for (purchase in listOfPurchases) { robotViewModel.addPurchaseToList(robotViewModel.turnCount - 1, purchase) }
 
-            totalEnergySpent = result.data?.getIntExtra(EXTRA_ROBOT_ENERGY_SPENT, 0) ?: 0
-            robots[robotViewModel.turnCount - 1].myEnergy -= totalEnergySpent
+            val listOfDisabledButtons = result.data?.getStringArrayListExtra(EXTRA_DISABLED_BUTTONS) ?: mutableListOf<String>()
+            for (buttonID in listOfDisabledButtons) { robotViewModel.addDisabledButton(buttonID) }
+
+            val totalEnergySpent = result.data?.getIntExtra(EXTRA_ROBOT_ENERGY_SPENT, 0) ?: 0
+            Toast.makeText(this, "$totalEnergySpent", Toast.LENGTH_SHORT).show()
+            robotViewModel.updateEnergy(robotViewModel.turnCount - 1, -1 * (totalEnergySpent))
+
+        } else {
+            Toast.makeText(this, "result code NOT OK", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -89,11 +93,12 @@ class MainActivity : AppCompatActivity() {
          */
         makePurchase.setOnClickListener { _ : View ->
             if ((robotViewModel.turnCount) != 0) {
-                val intent = NewRobotPurchase.newIntent(this, robots[robotViewModel.turnCount - 1].myEnergy, robots[robotViewModel.turnCount - 1].largeImageResource)
+                val intent = NewRobotPurchase.newIntent(this, robotViewModel.energyList[robotViewModel.turnCount - 1],
+                    robots[robotViewModel.turnCount - 1].largeImageResource,
+                    robotViewModel.disabledButtons)
                 purchaseLauncher.launch(intent)
             }
         }
-
 
         // Logic to make sure the correct robot is large upon recreation
         if (robotViewModel.turnCount != 0) {
@@ -113,6 +118,7 @@ class MainActivity : AppCompatActivity() {
         robotViewModel.advanceTurn()
         updateMessageBox()
         setRobotTurn()
+        robotViewModel.increaseEnergy()
         setRobotImages()
         makeRobotToast()
     }
@@ -130,7 +136,6 @@ class MainActivity : AppCompatActivity() {
         for(robot in robots) { robot.myTurn = false }
 
         robots[robotViewModel.turnCount - 1].myTurn = true
-        robots[robotViewModel.turnCount - 1].myEnergy += 1
     }
 
     private fun setRobotImages() {
@@ -150,10 +155,10 @@ class MainActivity : AppCompatActivity() {
             .latestPurchase is -1 until that robot makes a purchase, so make a toast if != -1
             This function is called inside toggleImage(), after the text message and image view are set.
          */
-        if (robots[robotViewModel.turnCount - 1].listOfPurchases.size != 0) {
+        if (robotViewModel.purchases[robotViewModel.turnCount - 1].isNotEmpty()) {
             var listPurchaseString = ""
-            for (purchase in robots[robotViewModel.turnCount - 1].listOfPurchases) {
-                listPurchaseString += "$purchase "
+            for (purchase in robotViewModel.purchases[robotViewModel.turnCount - 1]) {
+                listPurchaseString += "$purchase, "
             }
             Toast.makeText(this, "Purchase List: $listPurchaseString", Toast.LENGTH_SHORT).show()
         }
