@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var makePurchase: Button
 
     private lateinit var robotImages : MutableList<ImageView>
-    private var latestPurchaseCost = 0
     private var totalEnergySpent = 0
 
     private val robots = listOf(
@@ -35,7 +34,6 @@ class MainActivity : AppCompatActivity() {
 
     private val robotViewModel : RobotViewModel by viewModels()
 
-
     /*
         purchaseLauncher is registered to handle the result of starting an activity. It processes the result when the launched activity (RobotPurchase) finishes.
         Lambda - if the RobotPurchase activity exits ok (hit the back button, don't swipe up), handle the Extra's that are sent back from RobotPurchase.
@@ -45,18 +43,23 @@ class MainActivity : AppCompatActivity() {
             - robot energy is not in RobotViewModel (maybe in task 3???)
      */
     private val purchaseLauncher = registerForActivityResult(
+        /*
+            Capture the results of the purchase activity.
+                - Int Array that is the list of rewards the robot has purchased
+                - Int totalEnergySpent that is the sum of purchase costs
+         */
+
         ActivityResultContracts.StartActivityForResult()) {
             result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            // capture this data for a toast
-            latestPurchaseCost = result.data?.getIntExtra(EXTRA_ROBOT_ITEM_PURCHASED, 0) ?: 0
-            robots[robotViewModel.turnCount -1].lastPurchase = latestPurchaseCost
-            robots[robotViewModel.turnCount - 1].listOfPurchases.add(latestPurchaseCost)
+
+            val listOfPurchases = result.data?.getIntArrayExtra(EXTRA_ROBOT_ITEM_PURCHASED)?.toMutableList() ?: mutableListOf<Int>()
+            for (purchase in listOfPurchases) {
+                robots[robotViewModel.turnCount - 1].listOfPurchases.add(purchase)
+            }
 
             totalEnergySpent = result.data?.getIntExtra(EXTRA_ROBOT_ENERGY_SPENT, 0) ?: 0
             robots[robotViewModel.turnCount - 1].myEnergy -= totalEnergySpent
-            makeRobotToast()
-//            Toast.makeText(this, "The Latest Purchase Was For $latestPurchaseCost Energy!", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -72,9 +75,9 @@ class MainActivity : AppCompatActivity() {
 
         robotImages = mutableListOf(redRobotImage, whiteRobotImage, yellowRobotImage)
 
-        redRobotImage.setOnClickListener { view: View -> toggleImage() }
-        whiteRobotImage.setOnClickListener { view: View -> toggleImage() }
-        yellowRobotImage.setOnClickListener { view: View -> toggleImage() }
+        redRobotImage.setOnClickListener { _: View -> toggleImage() }
+        whiteRobotImage.setOnClickListener { _: View -> toggleImage() }
+        yellowRobotImage.setOnClickListener { _: View -> toggleImage() }
 
         /*
             Set on click event listener for the make purchase button that launches the Robot Purchase Activity
@@ -84,7 +87,7 @@ class MainActivity : AppCompatActivity() {
                 - the energy of current robot
                 - the id of largeImageResource for current robot (to set the correct image in new activity)
          */
-        makePurchase.setOnClickListener { view : View ->
+        makePurchase.setOnClickListener { _ : View ->
             if ((robotViewModel.turnCount) != 0) {
                 val intent = NewRobotPurchase.newIntent(this, robots[robotViewModel.turnCount - 1].myEnergy, robots[robotViewModel.turnCount - 1].largeImageResource)
                 purchaseLauncher.launch(intent)
@@ -147,16 +150,12 @@ class MainActivity : AppCompatActivity() {
             .latestPurchase is -1 until that robot makes a purchase, so make a toast if != -1
             This function is called inside toggleImage(), after the text message and image view are set.
          */
-
-        // Need to fix when making two or more purchases in one session (send back list) --
-        if (robots[robotViewModel.turnCount - 1].lastPurchase != -1) {
+        if (robots[robotViewModel.turnCount - 1].listOfPurchases.size != 0) {
             var listPurchaseString = ""
             for (purchase in robots[robotViewModel.turnCount - 1].listOfPurchases) {
                 listPurchaseString += "$purchase "
             }
-            Toast.makeText(this, "Purchase List: $listPurchaseString", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Purchase List: $listPurchaseString", Toast.LENGTH_SHORT).show()
         }
-
-
     }
 }

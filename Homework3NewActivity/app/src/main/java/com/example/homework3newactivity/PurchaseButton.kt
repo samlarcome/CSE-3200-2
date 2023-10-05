@@ -8,5 +8,9 @@ package com.example.homework3newactivity
 data class PurchaseButton(
     val buttonString : Int,
     val costString : Int,
-    val costPrice : Int
+    val costPrice : Int,
+    // could also do just BOUGHT, by any robot
+    val boughtRed : Boolean = false,
+    val boughtWhite : Boolean = false,
+    val boughtYellow : Boolean = false
 ) {}

@@ -43,6 +43,9 @@ class NewRobotPurchase : AppCompatActivity() {
     private var imageResource = 0
     private var energySpent = 0
 
+    // Keep track of all the rewards purchased in this instance
+    private val listOfPurchases = ArrayList<Int>()
+
 
     /*
         Use PurchaseButton Data Class to store relevant information for each purchase button.
@@ -65,6 +68,9 @@ class NewRobotPurchase : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_robot_purchase)
+
+        // clear the array of purchases
+        listOfPurchases.clear()
 
         // set energySpent to zero each time RobotPurchase Activity is created, want to track spent in this session.
         energySpent = 0
@@ -173,19 +179,22 @@ class NewRobotPurchase : AppCompatActivity() {
             }
 
             Toast.makeText(this, s1, Toast.LENGTH_SHORT).show()
+
             robotEnergy -= costOfPurchase
             robotEnergyAvailable.text = robotEnergy.toString()
             energySpent += costOfPurchase
 
+            listOfPurchases.add(costOfPurchase)
+
             buttonToDisable.isEnabled = false
 
-            setItemPurchased(costOfPurchase, energySpent)
+            setItemPurchased(listOfPurchases, energySpent)
         } else {
             Toast.makeText(this, R.string.insufficient, Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun setItemPurchased(robotPurchaseMade : Int, robotEnergySpent : Int) {
+    private fun setItemPurchased(listOfPurchases : ArrayList<Int>, robotEnergySpent : Int) {
         /*
             Responsible for creating an Intent with extras that represent the purchase made and energy spent.
             Setting the result of the current activity (RobotPurchase) with the Intent to send data back to the calling activity (Main Activity).
@@ -193,7 +202,7 @@ class NewRobotPurchase : AppCompatActivity() {
             - Send total energy spent by current robot this session, to update that robot's energy total
         */
         val data = Intent().apply{
-            putExtra(EXTRA_ROBOT_ITEM_PURCHASED, robotPurchaseMade)
+            putExtra(EXTRA_ROBOT_ITEM_PURCHASED, listOfPurchases.toIntArray())
             putExtra(EXTRA_ROBOT_ENERGY_SPENT, robotEnergySpent)
         }
         setResult(Activity.RESULT_OK, data)
