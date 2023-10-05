@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             result ->
         if (result.resultCode == Activity.RESULT_OK) {
 
-            val listOfPurchases = result.data?.getIntArrayExtra(EXTRA_ROBOT_ITEM_PURCHASED)?.toMutableList() ?: mutableListOf<Int>()
+            val listOfPurchases = result.data?.getStringArrayListExtra(EXTRA_ROBOT_ITEM_PURCHASED) ?: mutableListOf<String>()
             for (purchase in listOfPurchases) { robotViewModel.addPurchaseToList(robotViewModel.turnCount - 1, purchase) }
 
             val listOfDisabledButtons = result.data?.getStringArrayListExtra(EXTRA_DISABLED_BUTTONS) ?: mutableListOf<String>()

@@ -24,12 +24,12 @@ class RobotViewModel(private val savedStateHandle : SavedStateHandle) : ViewMode
     fun increaseEnergy() { integerList[turnCount - 1] += 1 }
     // ******************************************************************************************************************************
 
-    private var purchaseList: ArrayList<ArrayList<Int>> = savedStateHandle.get(PURCHASE_LIST_KEY) ?: ArrayList<ArrayList<Int>>(listOf(ArrayList(), ArrayList(), ArrayList()))
+    private var purchaseList: ArrayList<ArrayList<String>> = savedStateHandle.get(PURCHASE_LIST_KEY) ?: ArrayList<ArrayList<String>>(listOf(ArrayList(), ArrayList(), ArrayList()))
 
-    val purchases: List<List<Int>>
+    val purchases: List<List<String>>
         get() = purchaseList
 
-    fun addPurchaseToList(index : Int, purchase : Int) { purchaseList[index].add(purchase) }
+    fun addPurchaseToList(index : Int, purchase : String) { purchaseList[index].add(purchase) }
 
     // ********************************************************************************************************************************
     var turnCount : Int

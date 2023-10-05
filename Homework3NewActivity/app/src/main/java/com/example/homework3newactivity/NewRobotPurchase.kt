@@ -206,12 +206,13 @@ class NewRobotPurchase : AppCompatActivity() {
                 else -> getString(R.string.error_reward)
             }
 
-            Toast.makeText(this, s1, Toast.LENGTH_SHORT).show()
+            val str = buttonToDisable.text.toString()
+            Toast.makeText(this, "${str[str.length - 1]}", Toast.LENGTH_SHORT).show()
 
             purchaseViewModel.makePurchase(costOfPurchase)
             robotEnergyAvailable.text = purchaseViewModel.energy.toString()
 
-            purchaseViewModel.addPurchaseToList(costOfPurchase)
+            purchaseViewModel.addPurchaseToList(str[str.length - 1].toString())
             buttonToDisable.isEnabled = false
             purchaseViewModel.addDisabledButton(buttonToDisable.text.toString())
 
@@ -222,7 +223,7 @@ class NewRobotPurchase : AppCompatActivity() {
         }
     }
 
-    private fun setItemPurchased(listOfPurchases : ArrayList<Int>, robotEnergySpent : Int, disabledButtons : Set<String>) {
+    private fun setItemPurchased(listOfPurchases : ArrayList<String>, robotEnergySpent : Int, disabledButtons : Set<String>) {
         /*
             Responsible for creating an Intent with extras that represent the purchase made and energy spent.
             Setting the result of the current activity (RobotPurchase) with the Intent to send data back to the calling activity (Main Activity).
@@ -231,7 +232,7 @@ class NewRobotPurchase : AppCompatActivity() {
         */
 
         val data = Intent().apply{
-            putExtra(EXTRA_ROBOT_ITEM_PURCHASED, listOfPurchases.toIntArray())
+            putStringArrayListExtra(EXTRA_ROBOT_ITEM_PURCHASED, listOfPurchases)
             putExtra(EXTRA_ROBOT_ENERGY_SPENT, robotEnergySpent)
             putStringArrayListExtra(EXTRA_DISABLED_BUTTONS, ArrayList(disabledButtons.toList()))
         }

@@ -56,12 +56,12 @@ class PurchaseViewModel(private val savedStateHandle : SavedStateHandle) : ViewM
     }
     // ********************************************************************************************************************************
 
-    private var purchaseList: ArrayList<Int> = savedStateHandle.get(PURCHASE_LIST_KEY) ?: ArrayList<Int>()
+    private var purchaseList: ArrayList<String> = savedStateHandle.get(PURCHASE_LIST_KEY) ?: ArrayList<String>()
 
-    val purchases: List<Int>
+    val purchases: List<String>
         get() = purchaseList
 
-    fun addPurchaseToList( purchase : Int) { purchaseList.add(purchase) }
+    fun addPurchaseToList( purchase : String) { purchaseList.add(purchase) }
 
     // ********************************************************************************************************************************
 }
