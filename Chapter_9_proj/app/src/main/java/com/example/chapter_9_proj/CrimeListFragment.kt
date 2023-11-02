@@ -7,15 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chapter_9_proj.databinding.FragmentCrimeDetailBinding
 import com.example.chapter_9_proj.databinding.FragmentCrimeListBinding
+import kotlinx.coroutines.launch
 
 private const val TAG = "CrimeListFragment"
 class CrimeListFragment : Fragment() {
 
     val crimeListViewModel : CrimeListViewModel by viewModels()
     private var _binding : FragmentCrimeListBinding? = null
+
     private val binding
         get() = checkNotNull(_binding){
             "Error: can we see this"
@@ -43,7 +48,15 @@ class CrimeListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // TODO
+
+        viewLifecycleOwner.lifecycleScope.launch{
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                val crimes = crimeListViewModel.loadCrimes()
+                binding.crimeRecyclerView.adapter = CrimeListAdapter(crimes)
+            }
+        }
+
+
     }
 
     override fun onDestroyView() {
