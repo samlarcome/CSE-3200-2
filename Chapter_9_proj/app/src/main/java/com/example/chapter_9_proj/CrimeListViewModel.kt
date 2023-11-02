@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 import java.util.Date
 
-private const val TAG = "Crime List View Model"
+private const val TAG = "CrimeListViewModel"
 
 class CrimeListViewModel : ViewModel() {
     val crimes = mutableListOf<Crime>()
@@ -23,7 +23,7 @@ class CrimeListViewModel : ViewModel() {
     }
 
     suspend fun loadCrimes() : List<Crime> {
-        // delay(5000)
+        delay(5000)
         val result = mutableListOf<Crime>()
         for( i in 0 until  100) {
             val crime = Crime(
