@@ -13,6 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chapter_9_proj.databinding.FragmentCrimeDetailBinding
 import com.example.chapter_9_proj.databinding.FragmentCrimeListBinding
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 private const val TAG = "CrimeListFragment"
@@ -40,13 +41,19 @@ class CrimeListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewLifecycleOwner.lifecycleScope.launch{
+
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                val crimes = crimeListViewModel.loadCrimes()
-                binding.crimeRecyclerView.adapter = CrimeListAdapter(crimes)
+                /* repeatOnLifeCycle is a suspending fxn.
+                   can execute your code while it is in a specific LifeCycle state ( we want to execute it here in onViewCreated )
+                   collect crimes from flow here
+                 */
+
+                // Lambda FXN to COLLECT CRIMES FROM FLOW AND UPDATE UI
+                crimeListViewModel.crimes.collect{crimes ->
+                    binding.crimeRecyclerView.adapter = CrimeListAdapter(crimes)
+                }
             }
         }
-
-
     }
 
     override fun onDestroyView() {
