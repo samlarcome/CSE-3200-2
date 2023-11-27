@@ -26,6 +26,8 @@ class BoxDrawingView(
         color = 0xfff8efe0.toInt()
     }
 
+    private var shapeCount = 0
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val current = PointF(event.x, event.y)
         var action = ""
@@ -44,6 +46,7 @@ class BoxDrawingView(
             MotionEvent.ACTION_UP -> {
                 action = "ACTION_UP"
                 updateCurrentBox(current)
+                shapeCount += 1
                 currentBox = null
             }
             MotionEvent.ACTION_CANCEL -> {
@@ -60,14 +63,60 @@ class BoxDrawingView(
     override fun onDraw(canvas: Canvas) {
         canvas.drawPaint(backgroundPaint)
         boxes.forEach {box ->
-            canvas.drawRect(box.left, box.top, box.right, box.bottom, boxPaint)
+            //canvas.drawRect(box.left, box.top, box.right, box.bottom, boxPaint)
+            var squareSide = Math.min(box.height, box.width)
+            if (box.width > box.height) {
+                if (box.start.y > box.end.y && box.start.x > box.end.x) {
+                    canvas.drawRect(
+                        box.right - squareSide,
+                        box.bottom - squareSide,
+                        box.right,
+                        box.bottom,
+                        boxPaint
+                    )
+                } else if (box.start.x > box.end.x && box.start.y < box.end.y) {
+                    canvas.drawRect(
+                        box.right - squareSide,
+                        box.top,
+                        box.right,
+                        box.top + squareSide,
+                        boxPaint
+                    )
+                } else if (box.start.y > box.end.y && box.start.x < box.end.y) {
+                    canvas.drawRect(
+                        box.left,
+                        box.bottom - squareSide,
+                        box.left + squareSide,
+                        box.bottom,
+                        boxPaint
+                    )
+                } else {
+                    canvas.drawRect(
+                        box.left,
+                        box.top,
+                        box.left + squareSide,
+                        box.top + squareSide,
+                        boxPaint
+                    )
+                }
+            } else {
+                canvas.drawOval(
+                    box.left,
+                    box.top,
+                    box.left + squareSide,
+                    box.top + squareSide,
+                    boxPaint
+                )
+            }
         }
     }
 
     private fun updateCurrentBox(current: PointF) {
         currentBox?.let {
             it.end = current
-            invalidate()
+            if (shapeCount < 3) {
+                invalidate()
+            }
         }
     }
 }
