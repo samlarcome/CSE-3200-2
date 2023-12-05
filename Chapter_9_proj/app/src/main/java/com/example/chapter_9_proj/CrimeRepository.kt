@@ -39,6 +39,10 @@ class CrimeRepository private constructor(
         }
     }
 
+    suspend fun addCrime(crime: Crime) {
+        database.crimeDao().addCrime(crime)
+    }
+
     companion object{
         // CrimeRepository needs to be a SINGLETON
         private var INSTANCE: CrimeRepository? = null

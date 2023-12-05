@@ -39,23 +39,7 @@ class CrimeListViewModel : ViewModel() {
         }
     }
 
-    /* ADDING FLOW
-    suspend fun loadCrimes() : List<Crime>{
-        return crimeRepository.getCrimes()
-    }*/
-
-//    suspend fun loadCrimes() : List<Crime> {
-//        delay(5000)
-//        val result = mutableListOf<Crime>()
-//        for( i in 0 until  100) {
-//            val crime = Crime(
-//                id = UUID.randomUUID(),
-//                title = "Crime #$i",
-//                date = Date(),
-//                isSolved = ((i % 2) == 0)
-//            )
-//            result.add(crime)
-//        }
-//        return result
-//    }
+    suspend fun addCrime(crime: Crime) {
+        crimeRepository.addCrime(crime)
+    }
 }

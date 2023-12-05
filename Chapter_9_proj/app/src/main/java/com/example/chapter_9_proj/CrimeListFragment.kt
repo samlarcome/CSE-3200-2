@@ -3,8 +3,13 @@ package com.example.chapter_9_proj
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -16,6 +21,8 @@ import com.example.chapter_9_proj.databinding.FragmentCrimeDetailBinding
 import com.example.chapter_9_proj.databinding.FragmentCrimeListBinding
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.Date
+import java.util.UUID
 
 private const val TAG = "CrimeListFragment"
 class CrimeListFragment : Fragment() {
@@ -41,6 +48,25 @@ class CrimeListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // CH15 *****************************************************************************
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object: MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.fragment_crime_list, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.new_crime -> {
+                        showNewCrime()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        // *******************************************************************************
+
         viewLifecycleOwner.lifecycleScope.launch{
 
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
@@ -59,6 +85,21 @@ class CrimeListFragment : Fragment() {
                     }
                 }
             }
+        }
+    }
+
+    private fun showNewCrime() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val newCrime = Crime(
+                id = UUID.randomUUID(),
+                title = "",
+                date = Date(),
+                isSolved = false
+            )
+            crimeListViewModel.addCrime(newCrime)
+            findNavController().navigate(
+                CrimeListFragmentDirections.showCrimeDetail(newCrime.id)
+            )
         }
     }
 
