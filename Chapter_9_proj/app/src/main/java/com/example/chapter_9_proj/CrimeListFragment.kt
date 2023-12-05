@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.chapter_9_proj.databinding.FragmentCrimeDetailBinding
 import com.example.chapter_9_proj.databinding.FragmentCrimeListBinding
@@ -50,7 +51,12 @@ class CrimeListFragment : Fragment() {
 
                 // Lambda FXN to COLLECT CRIMES FROM FLOW AND UPDATE UI
                 crimeListViewModel.crimes.collect{crimes ->
-                    binding.crimeRecyclerView.adapter = CrimeListAdapter(crimes)
+                    binding.crimeRecyclerView.adapter = CrimeListAdapter(crimes) { crimeId ->
+                        findNavController().navigate(
+                            // id for where we are going -- R.id.show_crime_detail
+                            CrimeListFragmentDirections.showCrimeDetail(crimeId)
+                        )
+                    }
                 }
             }
         }

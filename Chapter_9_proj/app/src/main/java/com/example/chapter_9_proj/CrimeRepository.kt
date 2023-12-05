@@ -3,7 +3,10 @@ package com.example.chapter_9_proj
 import android.content.Context
 import androidx.room.Room
 import database.CrimeDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 // reference to db
@@ -13,7 +16,10 @@ private const val DATABASE_NAME = "crime-database"
 // determines how to fetch and store a particular set of data
 // *** UI will request all the data from the repository
     // UI doesn't care how the data is actually stored or fetched
-class CrimeRepository private constructor(context: Context) {
+class CrimeRepository private constructor(
+    context: Context,
+    private val coroutineScope: CoroutineScope = GlobalScope
+) {
     private val database: CrimeDatabase = Room.databaseBuilder(
         context.applicationContext,
         CrimeDatabase::class.java,
@@ -26,6 +32,12 @@ class CrimeRepository private constructor(context: Context) {
     fun getCrimes(): Flow<List<Crime>> = database.crimeDao().getCrimes()
 
     suspend fun getCrime(id: UUID): Crime = database.crimeDao().getCrime(id)
+
+    fun updateCrime(crime: Crime) {
+        coroutineScope.launch {
+            database.crimeDao().updateCrime(crime)
+        }
+    }
 
     companion object{
         // CrimeRepository needs to be a SINGLETON
