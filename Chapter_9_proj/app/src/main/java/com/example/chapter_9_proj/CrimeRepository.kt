@@ -3,6 +3,7 @@ package com.example.chapter_9_proj
 import android.content.Context
 import androidx.room.Room
 import database.CrimeDatabase
+import database.migration_1_2
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
@@ -24,8 +25,8 @@ class CrimeRepository private constructor(
         context.applicationContext,
         CrimeDatabase::class.java,
         DATABASE_NAME
-    ).createFromAsset(DATABASE_NAME).build()
-    // prepopulate data from our given database file
+    )//.createFromAsset(DATABASE_NAME).build() // prepopulate data from our given database file
+        .addMigrations(migration_1_2).build()
 
     // *** FLOW -- No More SUSPEND
     // Pass flow of Crimes along to VM
